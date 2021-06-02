@@ -1,12 +1,23 @@
-function formatDate(timestamp) {
-  let date = new Date(timestamp);
-  let hours = date.getHours();
-  if (hours < 10) {
-    hours = `0${hours}`;
+function formatDate(date) {
+  var d = new Date(date);
+  var hh = d.getHours();
+  var m = d.getMinutes();
+  var dd = "AM";
+  var h = hh;
+  if (h >= 12) {
+    h = hh - 12;
+    dd = "PM";
   }
-  let minutes = date.getMinutes();
-  if (minutes < 10) {
-    minutes = `0${minutes}`;
+  if (h == 0) {
+    h = 12;
+  }
+
+  if (h < 10) {
+    h = `0${h}`;
+  }
+
+  if (m < 10) {
+    m = `0${m}`;
   }
   let days = [
     "Sunday",
@@ -18,7 +29,7 @@ function formatDate(timestamp) {
     "Saturday",
   ];
   let day = days[date.getDay()];
-  return `${day} ${hours}:${minutes}`;
+  return `${day} ${h}:${m} ${dd}`;
 }
 
 function formatForecastDay(timestamp) {
@@ -68,7 +79,7 @@ function displayForecast(response) {
 
 function getForecast(coordinates) {
   let apiKey = "3cdeb8a2e580b02a2fb65ff28ecbc248";
-  let apiUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${apiKey}&units=metric`;
+  let apiUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${apiKey}&units=imperial`;
   axios.get(apiUrl).then(displayForecast);
 }
 
@@ -80,7 +91,6 @@ function displayTemperature(response) {
   let windspeedElement = document.querySelector("#windspeed");
   let dateElement = document.querySelector("#date");
   let iconElement = document.querySelector("#icon");
-  celsiusTemp = response.data.main.temp;
 
   temperatureElement.innerHTML = Math.round(response.data.main.temp);
   cityElement.innerHTML = response.data.name;
@@ -99,7 +109,7 @@ function displayTemperature(response) {
 
 function search(city) {
   let apiKey = "3cdeb8a2e580b02a2fb65ff28ecbc248";
-  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`;
   axios.get(apiUrl).then(displayTemperature);
 }
 
@@ -109,32 +119,7 @@ function handleSubmit(event) {
   search(cityInputElement.value);
 }
 
-function showFahrenheitTemp(event) {
-  event.preventDefault();
-  let fahrenheitTemp = (celsiusTemp * 9) / 5 + 32;
-  let temperatureElement = document.querySelector("#temperature");
-  temperatureElement.innerHTML = Math.round(fahrenheitTemp);
-  celsiusLink.classList.remove("active");
-  fahrenheitLink.classList.add("active");
-}
-
-function showCelsiusTemp(event) {
-  event.preventDefault();
-  let temperatureElement = document.querySelector("#temperature");
-  temperatureElement.innerHTML = Math.round(celsiusTemp);
-  fahrenheitLink.classList.remove("active");
-  celsiusLink.classList.add("active");
-}
-
-let celsiusTemp = null;
-
 let form = document.querySelector("#search-form");
 form.addEventListener("submit", handleSubmit);
-
-let fahrenheitLink = document.querySelector("#fahrenheit-link");
-fahrenheitLink.addEventListener("click", showFahrenheitTemp);
-
-let celsiusLink = document.querySelector("#celsius-link");
-celsiusLink.addEventListener("click", showCelsiusTemp);
 
 search("New York");
