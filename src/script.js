@@ -1,24 +1,28 @@
-function formatDate(date) {
-  var d = new Date(date);
-  var hh = d.getHours();
-  var m = d.getMinutes();
-  var dd = "AM";
-  var h = hh;
-  if (h >= 12) {
-    h = hh - 12;
-    dd = "PM";
-  }
-  if (h == 0) {
-    h = 12;
+function formatDate(timestamp) {
+  let date = new Date(timestamp);
+  let hours = date.getHours();
+  if (hours < 10) {
+    hours = `0${hours}`;
   }
 
-  if (h < 10) {
-    h = `0${h}`;
+  let ampm = document.querySelector("#ampm");
+  if (hours >= 12) {
+    ampm.innerHTML = `PM`;
   }
 
-  if (m < 10) {
-    m = `0${m}`;
+  if (hours >= 12) {
+    hours = hours - 12;
   }
+
+  if (hours == 0) {
+    hours = `12`;
+  }
+
+  let minutes = date.getMinutes();
+  if (minutes < 10) {
+    minutes = `0${minutes}`;
+  }
+
   let days = [
     "Sunday",
     "Monday",
@@ -29,7 +33,7 @@ function formatDate(date) {
     "Saturday",
   ];
   let day = days[date.getDay()];
-  return `${day} ${h}:${m} ${dd}`;
+  return `${day} ${hours}:${minutes}`;
 }
 
 function formatForecastDay(timestamp) {
